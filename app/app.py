@@ -3,19 +3,43 @@ from docx import Document
 import csv
 import io
 
-def extract_h3_clauses(docx_file):
+def extract_clauses(docx_file):
     document = Document(docx_file)
     clauses = []
-    
+    current_clause = None
+    nested_items = []
+
     for paragraph in document.paragraphs:
-        if paragraph.style.name == 'Heading 3' and paragraph.text.strip():
-            # Assuming the clause number is the initial part of the heading
-            parts = paragraph.text.split('\t', 1)  # Split on tab character for clause number
+        # Check if the paragraph is a list item
+        if paragraph.style.name.startswith('List'):
+            if current_clause:
+                nested_items.append(paragraph.text.strip())
+            continue
+        
+        # If we encounter a new heading or a new clause
+        if current_clause:
+            # Add the nested items to the current clause if any exist
+            if nested_items:
+                current_clause[1] += " " + " ".join(nested_items)
+                nested_items = []
+
+            clauses.append(current_clause)
+            current_clause = None
+
+        # Check for clause headings (assuming they are not styled as H3)
+        if paragraph.text.strip():
+            parts = paragraph.text.split('\t', 1)  # Split on tab character
             if len(parts) == 2:
                 clause_number = parts[0].strip()
                 clause_content = parts[1].strip()
-                clauses.append((clause_number, clause_content))
+                current_clause = [clause_number, clause_content]
     
+    # Add the last clause if it exists
+    if current_clause:
+        if nested_items:
+            current_clause[1] += " " + " ".join(nested_items)
+        clauses.append(current_clause)
+
     return clauses
 
 def save_to_csv(clauses):
@@ -39,27 +63,27 @@ def main():
         st.write("File type:", uploaded_file.type)
         st.write("File size (bytes):", uploaded_file.size)
 
-        # Extract H3 clauses
-        clauses = extract_h3_clauses(uploaded_file)
+        # Extract clauses
+        clauses = extract_clauses(uploaded_file)
         
         if clauses:
-            st.write("Extracted H3 Clauses:")
+            st.write("Extracted Clauses:")
             for clause in clauses:
                 st.write(f"{clause[0]}: {clause[1]}")
 
             # Save to CSV
             csv_data = save_to_csv(clauses)
-            st.success("H3 clauses have been saved to a CSV format.")
+            st.success("Clauses have been saved to a CSV format.")
 
             # Provide a download button for the CSV
             st.download_button(
                 label="Download CSV",
                 data=csv_data,
-                file_name='h3_clauses.csv',
+                file_name='clauses.csv',
                 mime='text/csv'
             )
         else:
-            st.warning("No H3 clauses found in the document.")
+            st.warning("No clauses found in the document.")
 
 if __name__ == "__main__":
     main()
