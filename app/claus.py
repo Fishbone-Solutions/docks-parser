@@ -141,7 +141,7 @@ if uploaded_file is not None:
     df = pd.DataFrame(clauses, columns=["Clause Number", "Content"])
 
     # Configure AgGrid options for editable table
-    st.subheader("Edited Clauses Table")
+    st.subheader("Edit Clauses Table")
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_pagination(paginationAutoPageSize=True)  # Add pagination
     gb.configure_default_column(editable=True)  # Make all columns editable
@@ -168,7 +168,7 @@ if uploaded_file is not None:
     updated_df = pd.DataFrame(grid_response["data"])
 
     # Display the edited DataFrame
-    st.write("Edited Clauses Table:")
+    st.subheader("Final Clauses Table:")
     st.dataframe(updated_df, use_container_width=True)  # Ensure full width
 
     # Download the updated table as CSV
