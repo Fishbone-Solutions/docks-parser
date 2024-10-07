@@ -143,7 +143,7 @@ if uploaded_file is not None:
     # Configure AgGrid options for editable table
     st.subheader("Edit Clauses Table")
     gb = GridOptionsBuilder.from_dataframe(df)
-    gb.configure_pagination(paginationAutoPageSize=True)  # Add pagination
+    gb.configure_pagination(paginationPageSize=10)  # Set pagination to 10 rows per page
     gb.configure_default_column(editable=True)  # Make all columns editable
     gb.configure_grid_options(getRowNodeId="Clause Number")  # Enable row ID for rows
 
