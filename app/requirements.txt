@@ -1,2 +1,6 @@
 streamlit
 python-docx
+streamlit-aggrid
+mammoth
+pdfkit 
+wkhtmltopdf

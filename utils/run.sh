@@ -1,2 +1,2 @@
 #!/bin/sh
-streamlit run app.py --server.port 80
+streamlit run claus.py --server.port 80
