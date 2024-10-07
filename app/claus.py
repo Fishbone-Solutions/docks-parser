@@ -3,6 +3,50 @@ import pandas as pd
 from docx import Document
 import re
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
+import base64
+
+# Set page configuration
+st.set_page_config(layout="wide")  # Set wide layout to utilize the full screen
+
+# Function to load image and encode it to base64
+def load_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
+# Load and encode the train image
+encoded_image = load_image("image.png")
+
+# Custom CSS to animate the image
+st.markdown(
+    f"""
+    <style>
+    @keyframes slideIn {{
+        0% {{
+            transform: translateX(-100%);
+        }}
+        100% {{
+            transform: translateX(100%);
+        }}
+    }}
+    .header-img {{
+        animation: slideIn 20s linear infinite;
+        width: 100%;
+        height: auto;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Add the animated image to the header
+st.markdown(
+    f"""
+    <div style="position: relative; width: 100%; overflow: hidden;">
+        <img src="data:image/png;base64,{encoded_image}" class="header-img" alt="Header Image">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Function to extract clause numbers and content, including nested and sub-clauses
 def extract_clauses(doc):
@@ -80,11 +124,8 @@ def extract_clauses(doc):
     
     return clauses
 
-# Streamlit app layout
-st.set_page_config(layout="wide")  # Set wide layout to utilize the full screen
-
-st.title("Editable Clause Extraction Tool with AgGrid")
-st.write("Upload a .docx file, and edit the content in the table. You can also add/remove rows.")
+st.title("🐠 DOCKS Clause Extraction Tool")
+st.write("Upload a .docx file, and edit the content in the table.")
 
 # File uploader
 uploaded_file = st.file_uploader("Upload a DOCX file", type="docx")
